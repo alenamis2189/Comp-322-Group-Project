@@ -8,14 +8,26 @@ export default function PlayScreen(){
     // /* setting up the amount of time per round */
     const [secondsRemaining, setSecondsRemaining] = useState(60);
 
-    // game state: list of items, current index and score
-    // For demo purposes we'll use a small list of strings. Replace with your real items.
+    // game state: list of items, current index, and score
     type Item = { id: string; text: string; correct: boolean };
     const items: Item[] = useMemo(() => [
-         { id: 'a', text: 'Apple', correct: true },
-         { id: 'b', text: 'Banana', correct: false },
-         { id: 'c', text: 'Cherry', correct: true },
-         { id: 'd', text: 'Date', correct: false },
+        // safe items
+        { id: 'book', text: 'Book', prohibited: false },
+        { id: 'tshirt', text: 'T-shirt', prohibited: false },
+        { id: 'laptop', text: 'Laptop', prohibited: false },
+        { id: 'headphones', text: 'Headphones', prohibited: false },
+        { id: 'toothbrush', text: 'Toothbrush', prohibited: false },
+        { id: 'sunglasses', text: 'Sunglasses', prohibited: false },
+        { id: 'charger', text: 'Phone charger', prohibited: false },
+        { id: 'snacks', text: 'Snacks', prohibited: false },
+        { id: 'shoes', text: 'Shoes', prohibited: false },
+        { id: 'umbrella', text: 'Umbrella', prohibited: false },
+        // prohibited items
+        { id: 'knife', text: 'Knife', prohibited: true },
+        { id: 'scissors', text: 'Large Scissors', prohibited: true },
+        { id: 'gun', text: 'Gun', prohibited: true },
+        { id: 'ammunition', text: 'Ammunition', prohibited: true },
+        { id: 'water', text: 'Water Bottle (500mL)', prohibited: true },
     ], []);
 
     const [currentIndex, setCurrentIndex] = useState<number>(0);
