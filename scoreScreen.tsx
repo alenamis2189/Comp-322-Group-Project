@@ -2,19 +2,10 @@ import { router, useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import { Pressable, Text, View, StyleSheet } from 'react-native';
 
-export default function scoreScreen(){
-    // read the score = 0 from play screen but needs to be edited
-    const paramNumber = useLocalSearchParams();
-    // actual variable with the score as string
-    let score;
-    // if there is a score
-    if (paramNumber){
-        score = String(paramNumber.score);
-    } 
-    else {
-        // if there isn't
-        score = '0';
-    }
+export default function ScoreScreen(){
+    // read numeric score from params (expo-router gives strings sometimes)
+    const params = useLocalSearchParams() as { score?: string | number } | undefined;
+    const score = params && params.score ? Number(params.score) : 0;
 
     // go back to play screen
     function playAgain(){
