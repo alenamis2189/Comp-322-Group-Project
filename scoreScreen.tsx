@@ -3,19 +3,18 @@ import React from 'react';
 import { Pressable, Text, View, StyleSheet } from 'react-native';
 
 export default function ScoreScreen(){
-    // read numeric score from params (using the better logic from the second file)
+    // read numeric score from params (expo-router gives strings sometimes)
     const params = useLocalSearchParams() as { score?: string | number } | undefined;
     const score = params && params.score ? Number(params.score) : 0;
 
+    // go back to play screen
     function playAgain(){
-        // Corrected to use '/play' path
-        router.replace('/play');
+        router.replace('/playScreen');
     }
 
     function backtoIndex(){
         router.replace('/');
     }
-
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Final Score</Text>
@@ -28,6 +27,7 @@ export default function ScoreScreen(){
             <Pressable style={styles.button} onPress={backtoIndex}>
                 <Text style={styles.buttonText}>Back to Start</Text>
             </Pressable>
+
         </View>
     )
 }
