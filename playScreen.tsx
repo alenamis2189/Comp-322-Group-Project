@@ -1,4 +1,5 @@
 /* this window is for the actual screen of the game itself */
+/* this window is for the actual screen of the game itself */
 import { router } from 'expo-router';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Text, View, Pressable, StyleSheet } from 'react-native';
@@ -6,6 +7,7 @@ import { Text, View, Pressable, StyleSheet } from 'react-native';
 export default function PlayScreen(){
 
     // /* setting up the amount of time per round */
+    const [secondsRemaining, setSecondsRemaining] = useState(60);
     // const [secondsRemaining, setSecondsRemaining] = useState(60);
 
     // // game state: list of items, current index and score
@@ -20,6 +22,19 @@ export default function PlayScreen(){
 
     // const [currentIndex, setCurrentIndex] = useState<number>(0);
     // const [score, setScore] = useState<number>(0);
+
+    // game state: list of items, current index and score
+    // For demo purposes we'll use a small list of strings. Replace with your real items.
+    type Item = { id: string; text: string; correct: boolean };
+    const items: Item[] = useMemo(() => [
+         { id: 'a', text: 'Apple', correct: true },
+         { id: 'b', text: 'Banana', correct: false },
+         { id: 'c', text: 'Cherry', correct: true },
+         { id: 'd', text: 'Date', correct: false },
+    ], []);
+
+    const [currentIndex, setCurrentIndex] = useState<number>(0);
+    const [score, setScore] = useState<number>(0);
 
     // start the timer when the screen first appears
     useEffect(() => {
