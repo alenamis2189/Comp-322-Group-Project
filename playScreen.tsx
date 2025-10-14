@@ -12,22 +12,22 @@ export default function PlayScreen(){
     type Item = { id: string; text: string; correct: boolean };
     const items: Item[] = useMemo(() => [
         // safe items
-        { id: 'book', text: 'Book', prohibited: false },
-        { id: 'tshirt', text: 'T-shirt', prohibited: false },
-        { id: 'laptop', text: 'Laptop', prohibited: false },
-        { id: 'headphones', text: 'Headphones', prohibited: false },
-        { id: 'toothbrush', text: 'Toothbrush', prohibited: false },
-        { id: 'sunglasses', text: 'Sunglasses', prohibited: false },
-        { id: 'charger', text: 'Phone charger', prohibited: false },
-        { id: 'snacks', text: 'Snacks', prohibited: false },
-        { id: 'shoes', text: 'Shoes', prohibited: false },
-        { id: 'umbrella', text: 'Umbrella', prohibited: false },
+        { id: 'book', text: 'Book', correct: false },
+        { id: 'tshirt', text: 'T-shirt', correct: false },
+        { id: 'laptop', text: 'Laptop', correct: false },
+        { id: 'headphones', text: 'Headphones', correct: false },
+        { id: 'toothbrush', text: 'Toothbrush', correct: false },
+        { id: 'sunglasses', text: 'Sunglasses', correct: false },
+        { id: 'charger', text: 'Phone charger', correct: false },
+        { id: 'snacks', text: 'Snacks', correct: false },
+        { id: 'shoes', text: 'Shoes', correct: false },
+        { id: 'umbrella', text: 'Umbrella', correct: false },
         // prohibited items
-        { id: 'knife', text: 'Knife', prohibited: true },
-        { id: 'scissors', text: 'Large Scissors', prohibited: true },
-        { id: 'gun', text: 'Gun', prohibited: true },
-        { id: 'ammunition', text: 'Ammunition', prohibited: true },
-        { id: 'water', text: 'Water Bottle (500mL)', prohibited: true },
+        { id: 'knife', text: 'Knife', correct: true },
+        { id: 'scissors', text: 'Large Scissors', correct: true },
+        { id: 'gun', text: 'Gun', correct: true },
+        { id: 'ammunition', text: 'Ammunition', correct: true },
+        { id: 'water', text: 'Water Bottle (500mL)', correct: true },
     ], []);
 
     const [currentIndex, setCurrentIndex] = useState<number>(0);
