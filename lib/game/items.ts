@@ -73,13 +73,6 @@ difficulty: 'medium',
 image: require('../../assets/images/toothbrush.jpg'),
   },
           {
-id: 'powerbank',
-name: 'Battery Pack',
-isProhibited: false,
-difficulty: 'medium',
-image: require('../../assets/images/powerbank.jpg'),
-  },
-          {
 id: 'scissors',
 name: 'Kitchen Scissors',
 isProhibited: true,
@@ -90,13 +83,13 @@ image: require('../../assets/images/scissors.jpg'),
 
 // Hard level
 export const hardItems: GameItem[] = [
-        {
-id: 'lotion-100',
-name: 'Lotion (100 mL)',
-description: 'Exactly 100 mL, allowed.',
+          {
+id: 'powerbank',
+name: 'Battery Pack (lithium)',
+description: 'Lithium batteries are prohibited since 2021',
 isProhibited: false,
-difficulty: 'hard',
-image: require('../../assets/images/lotion-100.jpg'),
+difficulty: 'medium',
+image: require('../../assets/images/powerbank.jpg'),
   },
           {
 id: 'shampoo-80',
