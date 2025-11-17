@@ -91,12 +91,12 @@ image: require('../../assets/images/scissors.jpg'),
 // Hard level
 export const hardItems: GameItem[] = [
         {
-id: 'sunscreen-100',
-name: 'Sunscreen (100 mL)',
+id: 'lotion-100',
+name: 'Lotion (100 mL)',
 description: 'Exactly 100 mL, allowed.',
 isProhibited: false,
 difficulty: 'hard',
-image: require('../../assets/images/sunscreen-100.jpg'),
+image: require('../../assets/images/lotion-100.jpg'),
   },
           {
 id: 'shampoo-80',
