@@ -86,14 +86,14 @@ export const hardItems: GameItem[] = [
           {
 id: 'powerbank',
 name: 'Battery Pack (lithium)',
-description: 'Lithium batteries are prohibited since 2021',
+description: 'Lithium batteries have been prohibited since 2021',
 isProhibited: false,
-difficulty: 'medium',
+difficulty: 'hard',
 image: require('../../assets/images/powerbank.jpg'),
   },
           {
 id: 'lighter',
-name: 'Cigarettes lighter',
+name: 'Cigarette lighter',
 isProhibited: false,
 difficulty: 'hard',
 image: require('../../assets/images/lighter.jpg'),
