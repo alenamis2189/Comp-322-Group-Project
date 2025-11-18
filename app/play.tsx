@@ -1,5 +1,5 @@
 /* app/play.tsx
-   Play screen with always-visible info bar, tap feedback, and dark/light theming.
+   3×3 Grid TSA Game - Shows 9 items, tap logic, prevents double-tapping
 */
 import { router } from 'expo-router';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -10,30 +10,57 @@ import {
   StyleSheet,
   Image,
   useColorScheme,
-  Platform,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { allItems, GameItem } from '.../lib/game/items';
+import { easyItems, mediumItems, hardItems, GameItem } from '../lib/game/items';
+
+type TappedItem = {
+  item: GameItem;
+  tapped: boolean;
+};
 
 export default function PlayScreen() {
   const colorScheme = useColorScheme() || 'light';
-  const styles = themedStyles(colorScheme);
 
-  // /* setting up the amount of time per round */
-  const [secondsRemaining, setSecondsRemaining] = useState(60);
-  const items: GameItem[] = useMemo(() =>  allItems, []);
-  const [currentIndex, setCurrentIndex] = useState<number>(0);
+  // Game state
   const [score, setScore] = useState<number>(0);
+  const [gameItems, setGameItems] = useState<TappedItem[]>([]);
+  const [gameEnded, setGameEnded] = useState<boolean>(false);
+  const [timeRemaining, setTimeRemaining] = useState<number>(60); // 60 second timer
 
-  // difficulty could come from params or state; for now, keep a simple constant
-  const difficulty = 'Normal'; // <-- change or wire to params if needed
+  // Get 9 items from the difficulty lists (3 from each for variety)
+  const selectedItems: GameItem[] = useMemo(() => {
+    const items: GameItem[] = [];
+    
+    // Get 3 items from each difficulty level
+    items.push(...easyItems.slice(0, 3));
+    items.push(...mediumItems.slice(0, 3)); 
+    items.push(...hardItems.slice(0, 3));
+    
+    // Shuffle the array to randomize positions
+    return items.sort(() => Math.random() - 0.5);
+  }, []);
 
-  // start the timer when the screen first appears (run once)
+  // Initialize game items with tapped status
   useEffect(() => {
-    let timer = setInterval(() => {
-      setSecondsRemaining((prev) => {
+    const initialItems: TappedItem[] = selectedItems.map(item => ({
+      item,
+      tapped: false,
+    }));
+    setGameItems(initialItems);
+  }, [selectedItems]);
+
+  // Timer countdown effect
+  useEffect(() => {
+    if (gameEnded || timeRemaining <= 0) {
+      return;
+    }
+
+    const timer = setInterval(() => {
+      setTimeRemaining((prev) => {
         if (prev <= 1) {
-          clearInterval(timer);
+          setGameEnded(true);
+          // Time's up - go to score screen
           router.replace({ pathname: '/score', params: { score } });
           return 0;
         }
@@ -42,269 +69,233 @@ export default function PlayScreen() {
     }, 1000);
 
     return () => clearInterval(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // run once on mount
+  }, [gameEnded, timeRemaining, score]);
 
-  // handle security decision on the current item
-  function handleDecision(decision: 'pass' | 'no-pass') {
-    const isCorrectDecision =
-      (decision === 'pass' && !currentItem!.correct) || (decision === 'no-pass' && currentItem!.correct);
+  // Handle item tap
+  function handleItemTap(index: number) {
+    if (gameEnded || gameItems[index].tapped) {
+      return; // Prevent double-tapping or tapping after game ends
+    }
 
-    setScore((s: number) => s + (isCorrectDecision ? 1 : -1));
+    // Haptic feedback
+    if (Haptics) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    }
 
-    // move to next item
-    setCurrentIndex((i: number) => {
-      const next = i + 1;
-      if (next >= items.length) {
-        const final = isCorrectDecision ? score + 1 : score - 1;
-        router.replace({ pathname: '/score', params: { score: final } });
-        return i;
-      }
-      return next;
-    });
-  }
+    const tappedItem = gameItems[index].item;
+    
+    // Update the tapped state
+    setGameItems(prev => 
+      prev.map((gameItem, i) => 
+        i === index ? { ...gameItem, tapped: true } : gameItem
+      )
+    );
 
-  // small haptic helper - only runs on platforms that support it
-  async function doHaptic() {
-    try {
-      // selection is short and subtle
-      if (Platform.OS === 'ios' || Platform.OS === 'android') {
-        await Haptics.selectionAsync();
-      }
-    } catch (e) {
-      // ignore haptic errors silently
+    // Update score: +1 for prohibited items, -1 for safe items
+    const pointValue = tappedItem.isProhibited ? 1 : -1;
+    setScore(prevScore => prevScore + pointValue);
+
+    // Check if all prohibited items have been tapped
+    const updatedGameItems = gameItems.map((gameItem, i) => 
+      i === index ? { ...gameItem, tapped: true } : gameItem
+    );
+    
+    const allProhibitedTapped = updatedGameItems.every(gameItem => 
+      !gameItem.item.isProhibited || gameItem.tapped
+    );
+
+    if (allProhibitedTapped) {
+      // End the round automatically
+      setTimeout(() => {
+        const finalScore = score + pointValue;
+        setGameEnded(true);
+        router.replace({ pathname: '/score', params: { score: finalScore } });
+      }, 500); // Small delay to show the final tap
     }
   }
 
-  const currentItem = items[currentIndex];
-
-  const round = Math.min(currentIndex + 1, items.length);
+  // Get the style for each grid item based on its state
+  function getItemStyle(gameItem: TappedItem) {
+    if (!gameItem.tapped) {
+      return styles.gridItem;
+    }
+    
+    // Different styles for tapped items based on whether they were prohibited or safe
+    return gameItem.item.isProhibited 
+      ? [styles.gridItem, styles.prohibitedTapped]
+      : [styles.gridItem, styles.safeTapped];
+  }
 
   return (
     <View style={styles.container}>
-      {/* Info Bar (always visible) */}
-      <View style={styles.infoBar}>
-        <View style={styles.infoItem}>
-          <Text style={styles.infoLabel}>⏱</Text>
-          <Text style={styles.infoText}>{secondsRemaining}s</Text>
+      {/* Header with Score and Timer */}
+      <View style={styles.header}>
+        <View style={styles.gameInfo}>
+          <Text style={styles.headerText}>🎯 Score: {score}</Text>
+          <Text style={styles.timerText}>⏱️ {timeRemaining}s</Text>
         </View>
-
-        <View style={styles.infoItem}>
-          <Text style={styles.infoLabel}>🏆</Text>
-          <Text style={styles.infoText}>{score}</Text>
-        </View>
-
-        <View style={styles.infoItem}>
-          <Text style={styles.infoLabel}>🔁</Text>
-          <Text style={styles.infoText}> {round}/{items.length}</Text>
-        </View>
-
-        <View style={styles.infoItem}>
-          <Text style={styles.infoLabel}>⚙️</Text>
-          <Text style={styles.infoText}>{difficulty}</Text>
-        </View>
+        <Text style={styles.instructionHeader}>Tap all prohibited items!</Text>
       </View>
 
-      {/* Main Content Card */}
-      {currentItem ? (
-        <View style={styles.cardContainer}>
-          {/* Item Display Card - Non-interactive */}
-          <View style={styles.itemDisplayCard}>
-            {/* Item Image */}
-            {currentItem.imageUrl && (
-              <Image source={{ uri: currentItem.imageUrl }} style={styles.itemImage} resizeMode="cover" />
+      {/* 3×3 Grid */}
+      <View style={styles.grid}>
+        {gameItems.map((gameItem, index) => (
+          <Pressable
+            key={gameItem.item.id}
+            style={({ pressed }) => [
+              getItemStyle(gameItem),
+              pressed && !gameItem.tapped && styles.gridItemPressed,
+            ]}
+            onPress={() => handleItemTap(index)}
+            disabled={gameItem.tapped || gameEnded}
+          >
+            <Image 
+              source={gameItem.item.image} 
+              style={styles.itemImage}
+              resizeMode="cover"
+            />
+            <Text style={styles.itemName}>{gameItem.item.name}</Text>
+            
+            {/* Show feedback for tapped items */}
+            {gameItem.tapped && (
+              <View style={styles.feedbackOverlay}>
+                <Text style={styles.feedbackText}>
+                  {gameItem.item.isProhibited ? '+1' : '-1'}
+                </Text>
+              </View>
             )}
-            {/* Fallback: Local image using require */}
-            {currentItem.imagePath && !currentItem.imageUrl && (
-              <Image source={currentItem.imagePath} style={styles.itemImage} resizeMode="cover" />
-            )}
+          </Pressable>
+        ))}
+      </View>
 
-            <Text style={styles.itemText}>{currentItem.text}</Text>
-            <Text style={styles.instruction}>Security Decision Required</Text>
-          </View>
-
-          {/* Pass/No Pass Buttons */}
-          <View style={styles.buttonContainer}>
-            <Pressable
-              onPressIn={() => doHaptic()}
-              onPress={() => handleDecision('pass')}
-              style={({ pressed }) => [
-                styles.decisionButton,
-                styles.passButton,
-                pressed && styles.buttonPressed,
-              ]}
-            >
-              <Text style={styles.passButtonText}>✅ PASS</Text>
-              <Text style={styles.buttonSubtext}>Allow through</Text>
-            </Pressable>
-
-            <Pressable
-              onPressIn={() => doHaptic()}
-              onPress={() => handleDecision('no-pass')}
-              style={({ pressed }) => [
-                styles.decisionButton,
-                styles.noPassButton,
-                pressed && styles.buttonPressed,
-              ]}
-            >
-              <Text style={styles.noPassButtonText}>❌ NO PASS</Text>
-              <Text style={styles.buttonSubtext}>Confiscate item</Text>
-            </Pressable>
-          </View>
-
-          <Text style={styles.remaining}>Items Left: {items.length - currentIndex - 1}</Text>
-        </View>
-      ) : (
-        <Text style={styles.itemText}>Processing Results...</Text>
-      )}
+      {/* Instructions */}
+      <View style={styles.instructions}>
+        <Text style={styles.instructionText}>
+          🔴 Tap prohibited items for +1 point
+        </Text>
+        <Text style={styles.instructionText}>
+          🟢 Avoid safe items (-1 point)
+        </Text>
+        <Text style={styles.instructionText}>
+          Game ends when all prohibited items are found!
+        </Text>
+      </View>
     </View>
   );
 }
 
-/* Themed styles generator so colors adapt to light/dark modes */
-const themedStyles = (mode: 'light' | 'dark') => {
-  const isDark = mode === 'dark';
-
-  const colors = {
-    background: isDark ? '#0B0B0E' : '#FFFFFF',
-    card: isDark ? '#111217' : '#F0F0F0',
-    primary: isDark ? '#7AA8FF' : '#007AFF',
-    text: isDark ? '#E6E7EA' : '#222222',
-    subtext: isDark ? '#AEB3BD' : '#666666',
-    pass: '#4CAF50',
-    noPass: '#F44336',
-    infoBarBg: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)',
-  };
-
-  return StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: colors.background,
-      paddingTop: 50,
-      paddingHorizontal: 20,
-    },
-    infoBar: {
-      width: '100%',
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      paddingVertical: 10,
-      paddingHorizontal: 12,
-      backgroundColor: colors.infoBarBg,
-      borderRadius: 12,
-      marginBottom: 18,
-      // slight shadow for elevation
-      shadowColor: isDark ? '#000' : '#000',
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.06,
-      shadowRadius: 4,
-      elevation: 2,
-    },
-    infoItem: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 8,
-    },
-    infoLabel: {
-      fontSize: 14,
-      marginRight: 6,
-    },
-    infoText: {
-      color: colors.text,
-      fontSize: 16,
-      fontWeight: '700',
-    },
-
-    cardContainer: {
-      flex: 1,
-      alignItems: 'center',
-      justifyContent: 'center',
-      width: '100%',
-      maxWidth: 500,
-      alignSelf: 'center',
-    },
-    itemDisplayCard: {
-      backgroundColor: colors.card,
-      padding: 30,
-      borderRadius: 15,
-      width: '100%',
-      alignItems: 'center',
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.05,
-      shadowRadius: 8,
-      elevation: 5,
-      marginBottom: 20,
-    },
-    itemImage: {
-      width: 120,
-      height: 120,
-      borderRadius: 10,
-      marginBottom: 15,
-    },
-    itemText: {
-      fontSize: 28,
-      fontWeight: '700',
-      color: colors.primary,
-      marginBottom: 10,
-      textAlign: 'center',
-    },
-    instruction: {
-      color: colors.subtext,
-      fontSize: 16,
-      fontStyle: 'italic',
-    },
-
-    buttonContainer: {
-      flexDirection: 'row',
-      width: '100%',
-      gap: 15,
-      marginBottom: 10,
-    },
-    decisionButton: {
-      flex: 1,
-      paddingVertical: 18,
-      paddingHorizontal: 20,
-      borderRadius: 12,
-      alignItems: 'center',
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 3 },
-      shadowOpacity: 0.15,
-      shadowRadius: 6,
-      elevation: 4,
-    },
-    passButton: {
-      backgroundColor: '#4CAF50',
-    },
-    noPassButton: {
-      backgroundColor: '#F44336',
-    },
-    buttonPressed: {
-      opacity: 0.85,
-      transform: [{ scale: 0.985 }],
-    },
-    passButtonText: {
-      color: '#FFFFFF',
-      fontSize: 18,
-      fontWeight: '800',
-      marginBottom: 2,
-    },
-    noPassButtonText: {
-      color: '#FFFFFF',
-      fontSize: 18,
-      fontWeight: '800',
-      marginBottom: 2,
-    },
-    buttonSubtext: {
-      color: '#FFFFFF',
-      fontSize: 12,
-      opacity: 0.95,
-    },
-    remaining: {
-      marginTop: 20,
-      color: isDark ? '#AEB3BD' : '#666',
-      fontSize: 16,
-      fontWeight: '500',
-    },
-  });
-};
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+    padding: 10,
+    paddingTop: 25,
+  },
+  header: {
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  gameInfo: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginBottom: 5,
+  },
+  headerText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  timerText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#ff6b35',
+  },
+  instructionHeader: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#666',
+  },
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-around',
+    alignContent: 'space-around',
+    height: '70%', // Use most of available screen height
+    marginBottom: 15,
+  },
+  gridItem: {
+    width: '30%', 
+    height: '30%', // Make items take up 30% of grid height each
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
+    position: 'relative',
+  },
+  gridItemPressed: {
+    opacity: 0.8,
+    transform: [{ scale: 0.95 }],
+  },
+  prohibitedTapped: {
+    backgroundColor: '#e8f5e8',
+    borderColor: '#4CAF50',
+    borderWidth: 3,
+  },
+  safeTapped: {
+    backgroundColor: '#ffeaea',
+    borderColor: '#f44336',
+    borderWidth: 3,
+  },
+  itemImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 8,
+    marginBottom: 6,
+  },
+  itemName: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#333',
+    textAlign: 'center',
+    lineHeight: 14,
+  },
+  feedbackOverlay: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    backgroundColor: 'rgba(0,0,0,0.8)',
+    borderRadius: 12,
+    padding: 4,
+    minWidth: 28,
+    alignItems: 'center',
+  },
+  feedbackText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  instructions: {
+    backgroundColor: '#fff',
+    padding: 12,
+    borderRadius: 12,
+    marginTop: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  instructionText: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 6,
+  },
+});
