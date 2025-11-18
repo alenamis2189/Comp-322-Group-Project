@@ -2,43 +2,16 @@
 import { router } from 'expo-router';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Text, View, Pressable, StyleSheet, Image } from 'react-native';
+import { allItems, GameItem, getItemsByDifficulty, Difficulty } from '../lib/game/items';
 
 export default function PlayScreen(){
 
     // /* setting up the amount of time per round */
     const [secondsRemaining, setSecondsRemaining] = useState(60);
-
-    // game state: list of items, current index, and score
-    type Item = { 
-        id: string; 
-        text: string; 
-        correct: boolean; 
-        imageUrl?: string; // Optional: for web URLs
-        imagePath?: any;   // Optional: for local require() paths
-    };
-    
-    const items: Item[] = useMemo(() => [
-        // safe items
-        { id: 'book', text: 'Book', correct: false, imageUrl: 'https://via.placeholder.com/150x150/4CAF50/white?text=📚' },
-        { id: 'tshirt', text: 'T-shirt', correct: false, imageUrl: 'https://via.placeholder.com/150x150/2196F3/white?text=👕' },
-        { id: 'laptop', text: 'Laptop', correct: false, imageUrl: 'https://via.placeholder.com/150x150/607D8B/white?text=💻' },
-        { id: 'headphones', text: 'Headphones', correct: false, imageUrl: 'https://via.placeholder.com/150x150/9C27B0/white?text=🎧' },
-        { id: 'toothbrush', text: 'Toothbrush', correct: false, imageUrl: 'https://via.placeholder.com/150x150/00BCD4/white?text=🪥' },
-        { id: 'sunglasses', text: 'Sunglasses', correct: false, imageUrl: 'https://via.placeholder.com/150x150/FF9800/white?text=🕶️' },
-        { id: 'charger', text: 'Phone charger', correct: false, imageUrl: 'https://via.placeholder.com/150x150/795548/white?text=🔌' },
-        { id: 'snacks', text: 'Snacks', correct: false, imageUrl: 'https://via.placeholder.com/150x150/8BC34A/white?text=🍿' },
-        { id: 'shoes', text: 'Shoes', correct: false, imageUrl: 'https://via.placeholder.com/150x150/3F51B5/white?text=👟' },
-        { id: 'umbrella', text: 'Umbrella', correct: false, imageUrl: 'https://via.placeholder.com/150x150/E91E63/white?text=☂️' },
-        // prohibited items
-        { id: 'knife', text: 'Knife', correct: true, imageUrl: 'https://via.placeholder.com/150x150/F44336/white?text=🔪' },
-        { id: 'scissors', text: 'Large Scissors', correct: true, imageUrl: 'https://via.placeholder.com/150x150/FF5722/white?text=✂️' },
-        { id: 'gun', text: 'Gun', correct: true, imageUrl: 'https://via.placeholder.com/150x150/D32F2F/white?text=🔫' },
-        { id: 'ammunition', text: 'Ammunition', correct: true, imageUrl: 'https://via.placeholder.com/150x150/B71C1C/white?text=💥' },
-        { id: 'water', text: 'Water Bottle (500mL)', correct: true, imageUrl: 'https://via.placeholder.com/150x150/1976D2/white?text=🍼' },
-    ], []);
-
+    const items: GameItem[] = useMemo(() => allItems, []);
     const [currentIndex, setCurrentIndex] = useState<number>(0);
     const [score, setScore] = useState<number>(0);
+    const currentItem = items[currentIndex];
 
     // start the timer when the screen first appears
     useEffect(() => {
