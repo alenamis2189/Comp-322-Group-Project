@@ -9,8 +9,8 @@ isCorrect: boolean;
 timestamp: number;
 };
 
-        const CORRECT_POINTS = 1;
-        const WRONG_POINTS = -1;
+const CORRECT_POINTS = 1;
+const WRONG_POINTS = -1;
 
 export function isCorrectDecision(
         item: GameItem,
@@ -27,8 +27,8 @@ export function getScoreDelta(
         decision: Decision
 ): number {
     return isCorrectDecision(item, decision)
-            ? CORRECT_POINTS
-            : WRONG_POINTS;
+        ? CORRECT_POINTS
+        : WRONG_POINTS;
 }
 
 export type RoundSummary = {
@@ -36,24 +36,20 @@ difficulty: Difficulty;
 totalItems: number;
 correctCount: number;
 incorrectCount: number;
-accuracy: number;
-accuracyPercent: number;
 };
 
 export function summarizeRound(
-        difficulty: Difficulty,
-        answers: AnswerRecord[]
+difficulty: Difficulty,
+answers: AnswerRecord[]
 ): RoundSummary {
   const totalItems = answers.length;
   const correctCount = answers.filter(a => a.isCorrect).length;
   const incorrectCount = totalItems - correctCount;
-  const accuracy = totalItems ? correctCount / totalItems : 0;
 
     return {
             difficulty,
             totalItems,
             correctCount,
             incorrectCount,
-            accuracy,
     };
 }
