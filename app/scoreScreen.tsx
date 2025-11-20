@@ -5,9 +5,15 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 export default function ScoreScreen(){
     // read round + session scores and difficulty from params -fg
     const params = useLocalSearchParams();
+
+    // if there's a score in the round, convert to number, otherwise 0
     const roundScore = params.roundScore ? Number(params.roundScore) : 0; 
     const totalScore = params.totalScore ? Number(params.totalScore) : 0; 
+
+    // if there's a difficulty assigned, convert to string, otherwise default to easy
     const difficulty = params.difficulty ? String(params.difficulty) : 'easy'; 
+
+    // to keep track of how many rounds has it been, default to 1 if nothing is passed
     const gameRound = params.gameRound ? Number(params.gameRound) : 1; 
 
     // set rounds by difficulty -fg
@@ -19,13 +25,18 @@ export default function ScoreScreen(){
     } else if (difficulty === 'hard'){
         gameTotalRounds = 10;
     }
-
+    // last round = if the number of rounds is the same or biggger than total rounds -fg
     const isLastRound = gameRound >= gameTotalRounds;
 
     // automatically go to next round if more rounds left -fg
     useEffect(() => {
+
+      // if we aren't in the last round
       if (gameRound < gameTotalRounds) {
+
+        // set timer of 2.5 seconds 
         const timer = setTimeout(() => {
+          // show transition screen
           router.replace({
             pathname: '/playScreen',
             params: {
@@ -37,8 +48,11 @@ export default function ScoreScreen(){
           });
         }, 2500); // small delay so player sees results -fg
 
+        // to clear up the timer and avoid bugs
         return () => clearTimeout(timer);
       }
+
+      // check if any of these variables changed
     }, [gameRound, gameTotalRounds, difficulty, totalScore]);
 
     function goToNextRound() { 
@@ -48,7 +62,8 @@ export default function ScoreScreen(){
         return;
       }
 
-      const nextRound = gameRound + 1; // -fg
+      // keep counter of next round -fg
+      const nextRound = gameRound + 1;
 
       router.replace({
         pathname: '/playScreen',
@@ -107,7 +122,7 @@ export default function ScoreScreen(){
                 </View>
               </>
             )}
-
+            {/* buttons only showing if it's the last round */}
             {isLastRound && (
               <>
                 {/* Primary Button */}
