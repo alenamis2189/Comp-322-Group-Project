@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 export default function DifficultyScreen() {
 
@@ -31,31 +31,37 @@ export default function DifficultyScreen() {
       params: {
         difficulty: level,
         startingTime: String(time),
-        totalRounds: String(rounds),
+        totalRounds: String(rounds), // depending on mode
         currentRound: "1",
-        scoreSoFar: "0"
+        scoreSoFar: "0",
+
+        // multi-round game logic -fg
+        gameRound: '1',                    // start on round 1 
+        gameTotalRounds: String(rounds),   //  3, 5 or 10 
+        totalScore: '0',                   // total of all rounds starts at 0
+
       }
     });
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>select difficulty</Text>
-      // options to click - difficulty
+      <Text style={styles.title}>Select Difficulty</Text>
+
       <Pressable style={styles.button} onPress={() => chooseDifficulty('easy')}>
-        <Text style={styles.buttonText}>easy</Text>
+        <Text style={styles.buttonText}>Easy</Text>
       </Pressable>
 
       <Pressable style={styles.button} onPress={() => chooseDifficulty('medium')}>
-        <Text style={styles.buttonText}>medium</Text>
+        <Text style={styles.buttonText}>Medium</Text>
       </Pressable>
 
       <Pressable style={styles.button} onPress={() => chooseDifficulty('hard')}>
-        <Text style={styles.buttonText}>hard</Text>
+        <Text style={styles.buttonText}>Hard</Text>
       </Pressable>
 
       <Pressable style={styles.backButton} onPress={() => router.replace('/')}>
-        <Text style={styles.backButtonText}>back to start</Text>
+        <Text style={styles.backButtonText}>Back to Start</Text>
       </Pressable>
     </View>
   );
