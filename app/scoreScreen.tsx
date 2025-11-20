@@ -72,28 +72,40 @@ export default function ScoreScreen(){
     
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>
-              {isLastRound ? 'Final Results' : 'Round Complete'}
-            </Text>
-            <Text style={styles.subtitle}>Score this round:</Text>
-            <Text style={styles.difficulty}>Difficulty: {difficulty}</Text> 
-            <Text style={styles.score}>{totalScore}</Text>
-            <Text style={styles.roundSummary}>
-              {`Total Score: ${totalScore}`}
-            </Text>
-            <Text style={styles.roundSummary}>
-              {`Round: ${gameRound} / ${gameTotalRounds}`}
+            <Text style={[styles.title, {marginBottom: isLastRound ? 5 : 40}]}>
+              {isLastRound ? 'Final Results' : 'Next round starting...'}
             </Text>
 
-            {!isLastRound ? (
-              <Text style={styles.roundSummary}>Next round starting...</Text> //loading next round -fg
+            {isLastRound ? (
+              <>
+                {/* <Text style={styles.subtitle}>Score this round:</Text> */}
+                <Text style={styles.difficulty}>Difficulty: {difficulty}</Text>
+                <Text style={styles.score}>{totalScore}</Text>
+                <Text style={styles.roundSummary}>
+                  {`Total Score: ${totalScore}`}
+                </Text>
+                <Text style={styles.roundSummary}>
+                  {`Round: ${gameRound} / ${gameTotalRounds}`}
+                </Text>
+
+                <Pressable
+                  style={({ pressed }) => [styles.button, styles.primaryButton, pressed && styles.buttonPressed]}
+                  onPress={goToNextRound}
+                >
+                  <Text style={styles.buttonText}>Finish Game</Text>
+                </Pressable>
+              </>
             ) : (
-              <Pressable
-                style={({ pressed }) => [styles.button, styles.primaryButton, pressed && styles.buttonPressed]}
-                onPress={goToNextRound}
-              >
-                <Text style={styles.buttonText}>Finish Game</Text>
-              </Pressable>
+              <>
+                <View style={styles.nextRoundSpacing}>
+                  <Text style={styles.roundSummary}>
+                    {`Total Score: ${totalScore}`}
+                  </Text>
+                  <Text style={styles.roundSummary}>
+                    {`Round: ${gameRound} / ${gameTotalRounds}`}
+                  </Text>
+                </View>
+              </>
             )}
 
             {isLastRound && (
@@ -128,34 +140,37 @@ const styles = StyleSheet.create({
         padding: 30,
     },
     title: { 
-        fontSize: 36, 
+        fontSize: 44, 
         fontWeight: '800', 
         color: '#333333',
-        marginBottom: 5, 
+        textAlign: 'center',
     },
     subtitle: {
-        fontSize: 20,
+        fontSize: 28,
         fontWeight: '500',
         color: '#666666',
         marginBottom: 10,
     },
-    difficulty: { fontSize: 18, fontWeight: '600', color: '#444', marginBottom: 20 }, // -fg
+    difficulty: { fontSize: 26, fontWeight: '600', color: '#444', marginBottom: 20 }, // -fg
     score: { 
-        fontSize: 72, 
+        fontSize: 90, 
         fontWeight: '900', 
         color: '#007AFF', // Score in primary blue
         marginBottom: 40, 
     },
     roundSummary: {
-      fontSize: 18,
+      fontSize: 26,
       fontWeight: '500',
       color: '#555',
       marginBottom: 20,
       textAlign: 'center',
     },
+    nextRoundSpacing: {
+      marginBottom: 30,
+    },
     // Consistent Button Styling
     button: { 
-        paddingVertical: 15, 
+        paddingVertical: 20, 
         paddingHorizontal: 30, 
         borderRadius: 10, 
         marginTop: 15,
@@ -180,12 +195,12 @@ const styles = StyleSheet.create({
     },
     buttonText: { 
         color: '#fff', 
-        fontSize: 20,
+        fontSize: 24,
         fontWeight: '700',
     },
     secondaryButtonText: {
         color: '#333333',
-        fontSize: 20,
+        fontSize: 24,
         fontWeight: '700',
     },
 });
