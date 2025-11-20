@@ -1,20 +1,49 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { Colors } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
-import { useColorScheme } from 'react-native';
 
-export default function RootLayout() {
+export default function Layout() {
   const colorScheme = useColorScheme();
+  const ActiveTintColor = Colors[colorScheme ?? 'light'].tint;
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="play" options={{ headerShown: false }} />
-        <Stack.Screen name="score" options={{ headerShown: false }} />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <Stack
+      screenOptions={{
+        headerStyle: {backgroundColor: ActiveTintColor},
+        headerTintColor: '#fff',
+
+      }}>
+      <Stack.Screen
+        name="index"
+        options={{
+          title: 'Start',
+        }}
+      />
+      <Stack.Screen
+        name="difficulty"
+        options={{
+          title: 'Select Level of Difficulty',
+        }}
+      />
+      <Stack.Screen
+        name="playScreen"
+        options={{
+          title: 'Play',
+        }}
+      />
+      <Stack.Screen
+        name="scoreScreen"
+        options={{
+          title: 'Results',
+        }}
+      />
+      <Stack.Screen
+        name="highScores"
+        options={{
+          title: 'High Scores',
+        }}
+      />
+    </Stack>
   );
 }
+
