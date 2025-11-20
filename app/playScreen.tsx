@@ -9,24 +9,25 @@
    - Light/dark theming tokens
    - Timer starts once on mount
 */
+import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  Text,
-  View,
-  Pressable,
-  StyleSheet,
-  Image,
-  useColorScheme,
-  Animated,
-  Easing,
-  LayoutAnimation,
-  UIManager,
-  Platform,
-  Dimensions,
+    Animated,
+    Dimensions,
+    Easing,
+    Image,
+    LayoutAnimation,
+    Platform,
+    Pressable,
+    StyleSheet,
+    Text,
+    UIManager,
+    useColorScheme,
+    View,
 } from 'react-native';
-import * as Haptics from 'expo-haptics';
-import { easyItems, mediumItems, hardItems, GameItem } from '../lib/game/items';
+import { easyItems, GameItem, hardItems, mediumItems } from '../lib/game/items';
+import { getTimerForDifficulty } from '../lib/game/rules'; // -fg
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -42,8 +43,16 @@ type TappedItem = {
 const INITIAL_TIME = 60;
 
 export default function PlayScreen() {
-  const params = useLocalSearchParams() as { difficulty?: string } | undefined;
-  const difficultyParam = (params && params.difficulty) ? String(params.difficulty) : 'Normal';
+  const params = useLocalSearchParams();
+
+  // read difficulty & multi-round info from route params -fg
+  const difficultyParam = params.difficulty ? String(params.difficulty) : 'easy'; // default to easy if missing 
+  const gameRound = params.gameRound ? Number(params.gameRound) : 1; // numeric round index 
+  const gameTotalRounds = params.gameTotalRounds ? Number(params.gameTotalRounds) : 1; // total rounds 
+  const totalScore = params.totalScore ? Number(params.totalScore) : 0; // total score before this round 
+
+  const normalizedDifficulty = difficultyParam.toLowerCase() as 'easy' | 'medium' | 'hard'; // -fg
+  const timerSeconds = getTimerForDifficulty(normalizedDifficulty); // -fg
 
   const colorScheme = useColorScheme() || 'light';
   const isDark = colorScheme === 'dark';
@@ -125,7 +134,7 @@ export default function PlayScreen() {
     setScore(0);
     setGameEnded(false);
     setRoundCount(0);
-    setTimeRemaining(INITIAL_TIME);
+    setTimeRemaining(timerSeconds); // -fg
     progressAnim.setValue(1);
     // animate progress to full instantly to ensure consistent starting state
     Animated.timing(progressAnim, { toValue: 1, duration: 0, useNativeDriver: false }).start();
@@ -138,7 +147,7 @@ export default function PlayScreen() {
 
     // Animate the progress bar whenever timeRemaining changes (also triggered here)
     Animated.timing(progressAnim, {
-      toValue: timeRemaining / INITIAL_TIME,
+      toValue: timeRemaining / timerSeconds, // -fg
       duration: 300,
       easing: Easing.out(Easing.quad),
       useNativeDriver: false,
@@ -147,9 +156,6 @@ export default function PlayScreen() {
     const interval = setInterval(() => {
       setTimeRemaining((prev) => {
         if (prev <= 1) {
-          LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-          setGameEnded(true);
-          router.replace({ pathname: '/score', params: { score } });
           return 0;
         }
         return prev - 1;
@@ -159,6 +165,27 @@ export default function PlayScreen() {
     return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameEnded]); // only depends on gameEnded
+
+  // when time runs out, end the round and go to score screen -fg
+  useEffect(() => {
+    if (timeRemaining !== 0 || gameEnded) {
+      return;
+    }
+
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setGameEnded(true);
+
+    router.replace({
+      pathname: '/scoreScreen',
+      params: {
+        roundScore: String(score),                // this round's score -fg
+        totalScore: String(totalScore + score),   // cumulative score -fg
+        difficulty: normalizedDifficulty,
+        gameRound: String(gameRound),
+        gameTotalRounds: String(gameTotalRounds),
+      },
+    });
+  }, [timeRemaining, gameEnded, score, totalScore, normalizedDifficulty, gameRound, gameTotalRounds]);
 
   // Layout animation helper on round end
   function animateLayoutNext() {
@@ -215,12 +242,21 @@ export default function PlayScreen() {
     const updated = gameItems.map((g, i) => (i === index ? { ...g, tapped: true } : g));
     const allProhibitedTapped = updated.every((g) => !g.item.isProhibited || g.tapped);
 
-    if (allProhibitedTapped) {
+    if (allProhibitedTapped && !gameEnded) {
       // small delay so animations finish, then end round and navigate
       setTimeout(() => {
         animateLayoutNext();
         setGameEnded(true);
-        router.replace({ pathname: '/score', params: { score: newScore } });
+        router.replace({
+          pathname: '/scoreScreen',
+          params: {
+            roundScore: String(newScore), // -fg
+            totalScore: String(totalScore + newScore), // -fg
+            difficulty: normalizedDifficulty,
+            gameRound: String(gameRound), // keep the same round index for ScoreScreen -fg
+            gameTotalRounds: String(gameTotalRounds), // -fg
+          },
+        });
       }, 520);
     }
   }
@@ -390,4 +426,3 @@ const styles = StyleSheet.create({
   instructions: { padding: 12, borderRadius: 12, marginTop: 6, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 3, elevation: 2 },
   instructionText: { fontSize: 15, textAlign: 'center', marginBottom: 6 },
 });
-
