@@ -1,11 +1,14 @@
 import { router } from 'expo-router';
-import { Pressable, Text, View, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 export default function HomeScreen() {
 
   // Corrected to use '/play' path based on your _layout.tsx
   function startTSAGame(){
-    router.push('/play');
+    router.push('/difficulty');
+  }
+  function seeHighScores(){
+    router.push('/highScores');
   }
 
   return (
@@ -20,6 +23,15 @@ export default function HomeScreen() {
       >
         <Text style={styles.buttonText}>Start Game</Text>
       </Pressable>
+      {/* High Score Button */}
+      <Pressable 
+        onPress={seeHighScores}
+        style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]} 
+      >
+        <Text style={styles.buttonText}>High Scores</Text>
+      </Pressable>
+
+
     </View>
   );
 };
