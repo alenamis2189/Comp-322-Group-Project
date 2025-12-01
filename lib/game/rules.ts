@@ -31,6 +31,28 @@ export function getScoreDelta(
         : WRONG_POINTS;
 }
 
+export function getTimerForDifficulty(difficulty: string): number {
+    switch (difficulty.toLowerCase()) {
+        case 'easy': return 60;
+        case 'medium': return 45;
+        case 'hard': return 30;
+        default: return 60;
+    }
+}
+
+export function calculateStreakBonus(streak: number): number {
+    if (streak < 2) return 0;
+    if (streak < 5) return Math.floor(streak / 2);
+    return Math.floor(streak * 0.5);
+}
+
+export function calculateReactionBonus(reactionTime: number): number {
+    // Bonus points for quick reactions (under 1 second = 0.5 bonus, under 0.5s = 1 bonus)
+    if (reactionTime < 500) return 1;
+    if (reactionTime < 1000) return 0.5;
+    return 0;
+}
+
 export type RoundSummary = {
 difficulty: Difficulty;
 totalItems: number;
