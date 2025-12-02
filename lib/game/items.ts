@@ -132,9 +132,9 @@ export function getItemsByDifficulty(diff: Difficulty): GameItem[] {
         case 'easy':
         return easyItems;
     case 'medium':
-            return mediumItems;
+        return mediumItems;
     case 'hard':
-            return hardItems;
+        return hardItems;
 default:
         return allItems;
   }
