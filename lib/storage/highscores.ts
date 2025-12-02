@@ -17,8 +17,3 @@ export function getHighScores() {
 export function clearHighScores() {
   HIGH_SCORES = [];
 }
-
-// Clear all scores
-export function clearHighScores() {
-  HIGH_SCORES = [];
-}
