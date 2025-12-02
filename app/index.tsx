@@ -8,7 +8,7 @@ export default function HomeScreen() {
     router.push('/difficulty');
   }
   function seeHighScores(){
-    router.push('/highScores');
+    router.push('/highScore');
   }
 
   return (
