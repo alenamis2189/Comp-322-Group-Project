@@ -74,7 +74,7 @@ image: require('../../assets/images/toothbrush.jpg'),
   },
           {
 id: 'scissors',
-name: 'Kitchen Scissors',
+name: 'Scissors',
 isProhibited: true,
 difficulty: 'medium',
 image: require('../../assets/images/scissors.jpg'),
@@ -84,10 +84,10 @@ image: require('../../assets/images/scissors.jpg'),
 // Hard level
 export const hardItems: GameItem[] = [
           {
-id: 'powerbank',
-name: 'Battery Pack (lithium)',
+id: 'power bank',
+name: 'Power Bank (lithium)',
 description: 'Lithium batteries have been prohibited since 2021',
-isProhibited: false,
+isProhibited: true,
 difficulty: 'hard',
 image: require('../../assets/images/powerbank.jpg'),
   },
