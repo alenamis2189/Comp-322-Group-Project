@@ -1,8 +1,8 @@
-import type { Difficulty } from './items';
+import type { Difficulty } from '../game/items';
 
 let HIGH_SCORES: { score: number; difficulty: Difficulty }[] = [];
 
-export function saveHighScore(score: number, difficulty: Difficulty) {
+export function saveHighScores(score: number, difficulty: Difficulty) {
   HIGH_SCORES.push({ score, difficulty });
 
   HIGH_SCORES.sort((a, b) => b.score - a.score);
