@@ -1,4 +1,4 @@
-export type Difficulty = ‘easy’ | ‘medium’ | ‘hard’;
+export type Difficulty = 'easy' | 'medium' | 'hard';
 
 export type GameItem = {
 id: string;
@@ -12,111 +12,111 @@ image: any;
 //Easy level
 export const easyItems: GameItem[] = [
         {
-id: ‘book’,
-name: ‘Book’,
+id: 'book',
+name: 'Book',
 isProhibited: false,
-difficulty: ‘easy’,
-image: require(‘../../assets/images/book.jpg’),
+difficulty: 'easy',
+image: require('../../assets/images/book.jpg'),
   },
           {
-id: ‘tshirt’,
-name: ‘T-shirt’,
+id: 'tshirt',
+name: 'T-shirt',
 isProhibited: false,
-difficulty: ‘easy’,
-image: require(‘../../assets/images/tshirt.jpg’),
+difficulty: 'easy',
+image: require('../../assets/images/tshirt.jpg'),
   },
           {
-id: ‘snacks’,
-name: ‘Snacks’,
+id: 'snacks',
+name: 'Snacks',
 isProhibited: false,
-difficulty: ‘easy’,
-image: require(‘../../assets/images/snacks.jpg’),
+difficulty: 'easy',
+image: require('../../assets/images/snacks.jpg'),
   },
           {
-id: ‘umbrella’,
-name: ‘Umbrella’,
+id: 'umbrella',
+name: 'Umbrella',
 isProhibited: false,
-difficulty: ‘easy’,
-image: require(‘../../assets/images/umbrella.jpg’),
+difficulty: 'easy',
+image: require('../../assets/images/umbrella.jpg'),
   },
           {
-id: ‘water-bottle-2L’,
-name: ‘Water Bottle (2L)’,
-description: ‘Over the 100 mL liquid rule.’,
+id: 'water-bottle-2L',
+name: 'Water Bottle (2L)',
+description: 'Over the 100 mL liquid rule.',
 isProhibited: true,
-difficulty: ‘easy’,
-image: require(‘../../assets/images/water.jpg’),
+difficulty: 'easy',
+image: require('../../assets/images/water.jpg'),
   },
           {
-id: ‘knife’,
-name: ‘Knife’,
+id: 'knife',
+name: 'Knife',
 isProhibited: true,
-difficulty: ‘easy’,
-image: require(‘../../assets/images/knife.jpg’),
+difficulty: 'easy',
+image: require('../../assets/images/knife.jpg'),
   },
           ];
 
 //Medium level
 export const mediumItems: GameItem[] = [
         {
-id: ‘laptop’,
-name: ‘Laptop’,
+id: 'laptop',
+name: 'Laptop',
 isProhibited: false,
-difficulty: ‘medium’,
+difficulty: 'medium',
 image: require('../../ assets/images/laptop.jpg'),
   },    {
-id: ‘toothbrush’,
-name: ‘Toothbrush’,
+id: 'toothbrush',
+name: 'Toothbrush',
 isProhibited: false,
-difficulty: ‘medium’,
-image: require(‘../../assets/images/toothbrush.jpg’),
+difficulty: 'medium',
+image: require('../../assets/images/toothbrush.jpg'),
   },
           {
-id: ‘scissors’,
-name: ‘Scissors’,
+id: 'scissors',
+name: 'Scissors',
 isProhibited: true,
-difficulty: ‘medium’,
-image: require(‘../../assets/images/scissors.jpg’),
+difficulty: 'medium',
+image: require('../../assets/images/scissors.jpg'),
   },
           ];
 
 // Hard level
 export const hardItems: GameItem[] = [
         {
-id: ‘powerbank’,
-name: ‘Powerbank (lithium)’,
-description: ‘Lithium batteries have been prohibited since 2021’,
+id: 'powerbank',
+name: 'Powerbank (lithium)',
+description: 'Lithium batteries have been prohibited since 2021',
 isProhibited: true,
-difficulty: ‘hard’,
-image: require(‘../../assets/images/powerbank.jpg’),
+difficulty: 'hard',
+image: require('../../assets/images/powerbank.jpg'),
   },
           {
-id: ‘lighter’,
-name: ‘Lighter’,
+id: 'lighter',
+name: 'Lighter',
 isProhibited: false,
-difficulty: ‘hard’,
-image: require(‘../../assets/images/lighter.jpg’),
+difficulty: 'hard',
+image: require('../../assets/images/lighter.jpg'),
   },
           {
-id: ‘baseball bat’,
-name: ‘Baseball bat’,
+id: 'baseball bat',
+name: 'Baseball bat',
 isProhibited: true,
-difficulty: ‘hard’,
-image: require(‘../../assets/images/baseball.jpg’),
+difficulty: 'hard',
+image: require('../../assets/images/baseball.jpg'),
   },
           {
-id: ‘gun’,
-name: ‘Gun’,
+id: 'gun',
+name: 'Gun',
 isProhibited: true,
-difficulty: ‘hard’,
-image: require(‘../../assets/images/gun.jpg’),
+difficulty: 'hard',
+image: require('../../assets/images/gun.jpg'),
   },
           {
-id: ‘ammo’,
-name: ‘Ammunition’,
+id: 'ammo',
+name: 'Ammunition',
 isProhibited: true,
-difficulty: ‘hard’,
-image: require(‘../../assets/images/ammunition.jpg’),
+difficulty: 'hard',
+image: require('../../assets/images/ammunition.jpg'),
   },
           ];
 export const allItems: GameItem[] = [
@@ -126,16 +126,16 @@ export const allItems: GameItem[] = [
         ];
 export function getItemsByDifficulty(diff: Difficulty): GameItem[] {
         switch (diff) {
-        case ‘easy’:
+        case 'easy':
         return easyItems;
-    case ‘medium’:
-        return mediumItems;
-    case ‘hard’:
-        return hardItems;
+    case 'medium':
+            return mediumItems;
+    case 'hard':
+            return hardItems;
 default:
         return allItems;
   }
-        }
+          }
 
 export function pickRandomItems(
         diff: Difficulty,
