@@ -1,8 +1,8 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { addHighScore } from ‘../lib/game/highScores’;
-import type { Difficulty } from ‘../lib/game/items’;
+import { saveHighScore } from '../lib/game/highScores';
+import type { Difficulty } from '../lib/game/items';
 
 export default function ScoreScreen(){
     // read round + session scores and difficulty from params -fg
@@ -36,6 +36,12 @@ export default function ScoreScreen(){
     }
     // last round = if the number of rounds is the same or biggger than total rounds -fg
     const isLastRound = gameRound >= gameTotalRounds;
+
+    useEffect(() => {
+      if (isLastRound) {
+        saveHighScore(totalScore, difficulty);
+      }
+    }, [isLastRound, totalScore, difficulty]);
 
     // automatically go to next round if more rounds left -fg
     useEffect(() => {
