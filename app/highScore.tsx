@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
 import React, { useState, useEffect } from 'react';
-import { getHighScores, clearHighScores } from '../lib/game/highScores';
+import { getHighScores, clearHighScores } from '../lib/storage/highScores';
 
 export default function HighScoresScreen() {
   const [scores, setScores] = React.useState([]);
