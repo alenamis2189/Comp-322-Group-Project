@@ -7,8 +7,8 @@ export default function HomeScreen() {
   function startTSAGame(){
     router.push('/difficulty');
   }
-  function seeHighScore(){
-    router.push('/highScore');
+  function seeHighScores(){
+    router.push('/highScores');
   }
 
   return (
@@ -30,8 +30,6 @@ export default function HomeScreen() {
       >
         <Text style={styles.buttonText}>High Scores</Text>
       </Pressable>
-
-
     </View>
   );
 };
