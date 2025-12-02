@@ -1,7 +1,7 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useState, useEffect } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { saveHighScores } from '../lib/game/highScores';
+import { saveHighScores } from '../lib/storage/highScores';
 import type { Difficulty } from '../lib/game/items';
 
 export default function ScoreScreen(){
