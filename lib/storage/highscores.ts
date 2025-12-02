@@ -1,4 +1,4 @@
-import type { Difficulty } from ‘./items’;
+import type { Difficulty } from './items';
 
 let HIGH_SCORES: { score: number; difficulty: Difficulty }[] = [];
 
