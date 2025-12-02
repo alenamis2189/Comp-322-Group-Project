@@ -1,7 +1,7 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useState, useEffect } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { saveHighScore } from '../lib/game/highScores';
+import { saveHighScores } from '../lib/game/highScores';
 import type { Difficulty } from '../lib/game/items';
 
 export default function ScoreScreen(){
@@ -39,7 +39,7 @@ export default function ScoreScreen(){
 
     useEffect(() => {
       if (isLastRound) {
-        saveHighScore(totalScore, difficulty);
+        saveHighScores(totalScore, difficulty);
       }
     }, [isLastRound, totalScore, difficulty]);
 
