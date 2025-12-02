@@ -46,6 +46,12 @@ export default function Layout() {
           title: 'High Scores',
         }}
       />
+      <Stack.Screen
+        name="rules"
+        options={{
+          title: 'How to Play',
+        }}
+      />
     </Stack>
   );
 }

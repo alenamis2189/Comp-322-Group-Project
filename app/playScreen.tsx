@@ -17,6 +17,7 @@ import {
     Easing,
     Image,
     LayoutAnimation,
+    Modal,
     Platform,
     Pressable,
     StyleSheet,
@@ -67,22 +68,23 @@ export default function PlayScreen() {
   const colorScheme = useColorScheme() || 'light';
   const isDark = colorScheme === 'dark';
 
-  // Theme tokens
+  // Theme tokens - Force light theme for better gameplay visibility
   const colors = {
-    background: isDark ? '#06060a' : '#f5f5f5',
-    card: isDark ? '#0f1115' : '#fff',
-    primary: isDark ? '#7AA8FF' : '#007AFF',
-    text: isDark ? '#E6E7EA' : '#222',
-    subtext: isDark ? '#AEB3BD' : '#666',
+    background: '#f5f5f5', // Always use light background for better item visibility
+    card: isDark ? '#fff' : '#fff', // Always white cards
+    primary: isDark ? '#007AFF' : '#007AFF', // Consistent primary color
+    text: isDark ? '#222' : '#222', // Dark text for readability
+    subtext: isDark ? '#666' : '#666', // Consistent subtext
     passBorder: '#4CAF50',
     failBorder: '#F44336',
-    infoBg: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)',
+    infoBg: 'rgba(0,0,0,0.03)', // Light info background
   };
 
   // Game state
   const [score, setScore] = useState<number>(0);
   const [gameItems, setGameItems] = useState<TappedItem[]>([]);
   const [gameEnded, setGameEnded] = useState<boolean>(false);
+  const [isPaused, setIsPaused] = useState<boolean>(false);
   const [timeRemaining, setTimeRemaining] = useState<number>(INITIAL_TIME);
   const [roundCount, setRoundCount] = useState<number>(0); // increments when a prohibited item is found
   const [gameStartTime, setGameStartTime] = useState<number>(Date.now());
@@ -182,17 +184,20 @@ export default function PlayScreen() {
     }).start();
 
     const interval = setInterval(() => {
-      setTimeRemaining((prev) => {
-        if (prev <= 1) {
-          return 0;
-        }
-        return prev - 1;
-      });
+      // Only decrement timer if game is not paused
+      if (!isPaused) {
+        setTimeRemaining((prev) => {
+          if (prev <= 1) {
+            return 0;
+          }
+          return prev - 1;
+        });
+      }
     }, 1000);
 
     return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gameEnded]); // only depends on gameEnded
+  }, [gameEnded, isPaused]); // now depends on gameEnded and isPaused
 
   // when time runs out, end the round and go to score screen -fg
   useEffect(() => {
@@ -242,7 +247,7 @@ export default function PlayScreen() {
 
   // Handle item tap with enhanced scoring
   function handleItemTap(index: number) {
-    if (gameEnded) return;
+    if (gameEnded || isPaused) return; // Prevent taps when game is paused
     // Defensive: if item already tapped, ignore
     const current = gameItems[index];
     if (!current || current.tapped) return;
@@ -354,7 +359,7 @@ export default function PlayScreen() {
         <Pressable
           onPressIn={() => doHaptic()}
           onPress={() => handleItemTap(idx)}
-          disabled={t.tapped || gameEnded}
+          disabled={t.tapped || gameEnded || isPaused} // Disable when paused
           style={({ pressed }) => [
             styles.pressableInner,
             pressed && !t.tapped && styles.gridItemPressed,
@@ -410,7 +415,7 @@ export default function PlayScreen() {
             </Text>
           </View>
 
-          <View style={styles.infoRight}>
+          <View style={styles.infoCenter}>
             <Text style={[styles.infoLabel, { color: colors.subtext }]}>⚙️</Text>
             <Text style={[styles.infoValue, { color: colors.text }]}>{difficultyParam}</Text>
           </View>
@@ -464,6 +469,50 @@ export default function PlayScreen() {
           </Text>
         </View>
       </View>
+
+      {/* Floating Pause Button - Positioned absolutely */}
+      <Pressable 
+        style={styles.floatingPauseButton}
+        onPress={() => {
+          console.log("Floating pause button tapped!"); 
+          setIsPaused(true);
+        }}
+      >
+        <Text style={styles.floatingPauseText}>⏸️</Text>
+      </Pressable>
+
+      {/* Pause Modal */}
+      <Modal
+        visible={isPaused}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setIsPaused(false)}
+      >
+        <View style={styles.pauseModalOverlay}>
+          <View style={[styles.pauseModal, { backgroundColor: colors.card }]}>
+            <Text style={[styles.pauseModalTitle, { color: colors.text }]}>Game Paused</Text>
+            
+            <View style={styles.pauseModalButtons}>
+              <Pressable 
+                style={[styles.pauseModalButton, styles.resumeButton]}
+                onPress={() => setIsPaused(false)}
+              >
+                <Text style={styles.resumeButtonText}>▶️ Resume</Text>
+              </Pressable>
+              
+              <Pressable 
+                style={[styles.pauseModalButton, styles.exitButton]}
+                onPress={() => {
+                  setIsPaused(false);
+                  router.replace('/');
+                }}
+              >
+                <Text style={styles.exitButtonText}>🚪 Exit Game</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -480,15 +529,91 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 6, // Reduced padding
+    padding: 8, 
     borderRadius: 10,
-    marginBottom: 4, // Reduced margin
+    marginBottom: 4,
   },
   infoLeft: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   infoCenter: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   infoRight: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   infoLabel: { fontSize: 14 },
   infoValue: { fontSize: 16, fontWeight: '700' },
+
+  // Working pause button styles
+  topButtonContainer: {
+    alignItems: 'flex-end',
+    marginBottom: 8,
+  },
+  workingPauseButton: {
+    backgroundColor: '#007AFF',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+  },
+  workingPauseText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+
+  // Floating pause button - absolutely positioned
+  floatingPauseButton: {
+    position: 'absolute',
+    bottom: 30,
+    right: 20,
+    backgroundColor: '#007AFF',
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 10,
+    zIndex: 9999,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+  },
+  floatingPauseText: {
+    color: '#fff',
+    fontSize: 24,
+  },
+
+  // Simple pause button for debugging
+  simplePauseButton: {
+    backgroundColor: '#007AFF',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+    elevation: 2,
+    zIndex: 999, // Ensure it's on top
+  },
+  simplePauseText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+
+  // Debug pause button - positioned at very top
+  debugPauseButton: {
+    backgroundColor: '#FF3B30',
+    padding: 20,
+    margin: 10,
+    borderRadius: 10,
+    alignItems: 'center',
+    elevation: 999,
+    zIndex: 9999,
+  },
+  debugPauseText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
 
   progressBarContainer: {
     height: 4, // Thinner progress bar
@@ -566,4 +691,74 @@ const styles = StyleSheet.create({
     flex: 0, // Don't expand
   },
   instructionText: { fontSize: 13, textAlign: 'center', marginBottom: 3 },
+
+  // Pause button styles
+  pauseButton: {
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 8,
+    minWidth: 44, // Minimum touch target size
+    minHeight: 44,
+    backgroundColor: 'rgba(0,122,255,0.1)', // Light background for better visibility
+  },
+  pauseButtonPressed: {
+    opacity: 0.7,
+    transform: [{ scale: 0.95 }],
+  },
+  pauseButtonText: {
+    fontSize: 20,
+    fontWeight: '600',
+  },
+
+  // Pause modal styles
+  pauseModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  pauseModal: {
+    width: '80%',
+    maxWidth: 300,
+    padding: 30,
+    borderRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  pauseModalTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    textAlign: 'center',
+    marginBottom: 30,
+  },
+  pauseModalButtons: {
+    gap: 15,
+  },
+  pauseModalButton: {
+    paddingVertical: 15,
+    paddingHorizontal: 25,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  resumeButton: {
+    backgroundColor: '#007AFF',
+  },
+  resumeButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  exitButton: {
+    backgroundColor: '#FF3B30',
+  },
+  exitButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '600',
+  },
 });

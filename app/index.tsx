@@ -10,6 +10,10 @@ export default function HomeScreen() {
   function seeHighScores(){
     router.push('/highScore');
   }
+  
+  function showRules(){
+    router.push('/rules');
+  }
 
   return (
     <View style={styles.container}>
@@ -23,12 +27,21 @@ export default function HomeScreen() {
       >
         <Text style={styles.buttonText}>Start Game</Text>
       </Pressable>
+      
+      {/* How to Play Button */}
+      <Pressable 
+        onPress={showRules}
+        style={({ pressed }) => [styles.button, styles.secondaryButton, pressed && styles.buttonPressed]} 
+      >
+        <Text style={[styles.buttonText, styles.secondaryButtonText]}>📖 How to Play</Text>
+      </Pressable>
+      
       {/* High Score Button */}
       <Pressable 
         onPress={seeHighScores}
-        style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]} 
+        style={({ pressed }) => [styles.button, styles.secondaryButton, pressed && styles.buttonPressed]} 
       >
-        <Text style={styles.buttonText}>High Scores</Text>
+        <Text style={[styles.buttonText, styles.secondaryButtonText]}>🏆 High Scores</Text>
       </Pressable>
     </View>
   );
@@ -61,11 +74,17 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     minWidth: 200,
     alignItems: 'center',
+    marginBottom: 15, // Space between buttons
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+  },
+  secondaryButton: {
+    backgroundColor: '#f0f0f0', // Light gray for secondary buttons
+    borderWidth: 1,
+    borderColor: '#007AFF',
   },
   buttonPressed: {
     opacity: 0.85, // Feedback on press
@@ -74,5 +93,8 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 20,
     fontWeight: '700',
+  },
+  secondaryButtonText: {
+    color: '#007AFF', // Blue text for secondary buttons
   },
 });
