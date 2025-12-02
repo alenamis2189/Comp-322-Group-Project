@@ -1,7 +1,13 @@
 import { router } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
+import { getHighScores, clearHighScores } from '../lib/game/highScores';
 
 export default function HighScoresScreen() {
+  const [scores, setScores] = React.useState([]);
+
+    React.useEffect(() => {
+    setScores(getHighScores());
+  }, []);
 
   // simple button to go back to start -fg
   function goBack() {
@@ -15,11 +21,19 @@ export default function HighScoresScreen() {
       alignItems: 'center'
     }}>
       <Text>High Scores</Text>
-      <Text> V3 Coming Soon </Text>
+{scores.length === 0 ? (
+  <Text>No scores yet.</Text>)
+ : (
+  scores.map((s, i) => (
+    <Text key={i}>
+      {i + 1}. {s.score} pts — {s.difficulty.toUpperCase()}
+    </Text>
+  ))
+)}
 
-      <Pressable onPress={goBack}>
-        <Text>Go Back</Text>
-      </Pressable>
-    </View>
-  );
-}
+    <Pressable onPress={() => { clearHighScores(); setScores([]); }}>
+      <Text>Clear Scores</Text>
+          </Pressable>
+        </View>
+    );
+  }
