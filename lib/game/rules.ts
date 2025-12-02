@@ -1,6 +1,6 @@
-import type { GameItem, Difficulty } from ‘./items’;
+import type { GameItem, Difficulty } from './items';
 
-export type Decision = ‘pass’ | ‘no-pass’;
+export type Decision = 'pass' | 'no-pass';
 
 export type AnswerRecord = {
 item: GameItem;
@@ -17,8 +17,8 @@ export function isCorrectDecision(
         decision: Decision
 ): boolean {
   return (
-          (decision === ‘pass’ && !item.isProhibited) ||
-  (decision === ‘no-pass’ && item.isProhibited)
+          (decision === 'pass' && !item.isProhibited) ||
+  (decision === 'no-pass' && item.isProhibited)
     );
 }
 
@@ -33,9 +33,9 @@ export function getScoreDelta(
 
 export function getTimerForDifficulty(difficulty: string): number {
   switch (difficulty.toLowerCase()) {
-    case ‘easy’: return 60;
-    case ‘medium’: return 45;
-    case ‘hard’: return 30;
+    case 'easy': return 60;
+    case 'medium': return 45;
+    case 'hard': return 30;
     default: return 60;
   }
 }
