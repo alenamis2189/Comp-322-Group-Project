@@ -7,8 +7,8 @@ export default function HomeScreen() {
   function startTSAGame(){
     router.push('/difficulty');
   }
-  function seeHighScores(){
-    router.push('/highScores');
+  function seeHighScore(){
+    router.push('/highScore');
   }
 
   return (
