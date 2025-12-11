@@ -72,35 +72,52 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20
+    padding: 20,
+    backgroundColor: '#f7f7f7' // soft background so buttons pop a bit
   },
   title: {
-    fontSize: 28,
+    fontSize: 30,
     fontWeight: '700',
-    marginBottom: 40
+    marginBottom: 45,
+    letterSpacing: 0.5,
+    color: '#222'
   },
   button: {
     backgroundColor: '#007AFF',
+    width: 240,                // same width for all buttons
     paddingVertical: 18,
-    paddingHorizontal: 50,
-    borderRadius: 10,
-    marginBottom: 20
+    borderRadius: 12,
+    marginBottom: 18,
+    alignItems: 'center',      // center text horizontally
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 4,
+    elevation: 3
   },
   buttonText: {
     color: '#fff',
-    fontSize: 20,
-    fontWeight: '600'
+    fontSize: 21,
+    fontWeight: '600',
+    letterSpacing: 0.4
   },
   backButton: {
-    marginTop: 30,
-    paddingVertical: 14,
-    paddingHorizontal: 40,
-    borderRadius: 10,
-    backgroundColor: '#555'
+    marginTop: 28,
+    width: 240,               // same width as difficulty buttons -fg
+    paddingVertical: 16,
+    borderRadius: 12,
+    backgroundColor: '#555',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3
   },
   backButtonText: {
     color: '#fff',
-    fontSize: 18,
-    fontWeight: '500'
+    fontSize: 20,
+    fontWeight: '600',
+    letterSpacing: 0.3
   }
 });
