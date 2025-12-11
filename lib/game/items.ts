@@ -7,6 +7,11 @@ description?: string;
 isProhibited: boolean;
 difficulty: Difficulty;
 image: any;
+imageUrl?: string;
+imagePath?: any;
+text?: string;
+correct?: any;
+
 };
 
 //Easy level
@@ -40,8 +45,8 @@ difficulty: 'easy',
 image: require('../../assets/images/umbrella.jpg'),
   },
           {
-id: 'water-bottle-2L',
-name: 'Water Bottle (2L)',
+id: 'water-bottle-500',
+name: 'Water Bottle (500 mL)',
 description: 'Over the 100 mL liquid rule.',
 isProhibited: true,
 difficulty: 'easy',
@@ -49,7 +54,7 @@ image: require('../../assets/images/water.jpg'),
   },
           {
 id: 'knife',
-name: 'Knife',
+name: 'Kitchen Knife',
 isProhibited: true,
 difficulty: 'easy',
 image: require('../../assets/images/knife.jpg'),
@@ -63,8 +68,9 @@ id: 'laptop',
 name: 'Laptop',
 isProhibited: false,
 difficulty: 'medium',
-image: require('../../ assets/images/laptop.jpg'),
-  },    {
+image: require('../../assets/images/laptop.jpg'),
+  },
+          {
 id: 'toothbrush',
 name: 'Toothbrush',
 isProhibited: false,
@@ -73,7 +79,7 @@ image: require('../../assets/images/toothbrush.jpg'),
   },
           {
 id: 'scissors',
-name: 'Scissors',
+name: 'Kitchen Scissors',
 isProhibited: true,
 difficulty: 'medium',
 image: require('../../assets/images/scissors.jpg'),
@@ -82,9 +88,9 @@ image: require('../../assets/images/scissors.jpg'),
 
 // Hard level
 export const hardItems: GameItem[] = [
-        {
+          {
 id: 'powerbank',
-name: 'Powerbank (lithium)',
+name: 'Battery Pack (lithium)',
 description: 'Lithium batteries have been prohibited since 2021',
 isProhibited: true,
 difficulty: 'hard',
@@ -92,7 +98,7 @@ image: require('../../assets/images/powerbank.jpg'),
   },
           {
 id: 'lighter',
-name: 'Lighter',
+name: 'Cigarette lighter',
 isProhibited: false,
 difficulty: 'hard',
 image: require('../../assets/images/lighter.jpg'),
@@ -119,11 +125,13 @@ difficulty: 'hard',
 image: require('../../assets/images/ammunition.jpg'),
   },
           ];
+
 export const allItems: GameItem[] = [
         ...easyItems,
         ...mediumItems,
         ...hardItems,
         ];
+
 export function getItemsByDifficulty(diff: Difficulty): GameItem[] {
         switch (diff) {
         case 'easy':
@@ -148,3 +156,4 @@ export function pickRandomItems(
         }
         return source.slice(0, count);
 }
+
