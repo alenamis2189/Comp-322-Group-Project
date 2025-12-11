@@ -3,17 +3,18 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 export default function HomeScreen() {
 
-  // Corrected to use '/play' path based on your _layout.tsx
+  // Start game
   function startTSAGame(){
     router.push('/difficulty');
   }
   function seeHighScores(){
-    router.push('/highScore');
+    router.push('/highScores');
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>TSA Luggage Check</Text>
+      <Text style={styles.icon}>✈️</Text>
+      <Text style={styles.title}>TSA Bag Ready</Text>
       <Text style={styles.subtitle}>Test your security skills!</Text>
       
       {/* Start Button with press feedback */}
@@ -23,19 +24,25 @@ export default function HomeScreen() {
       >
         <Text style={styles.buttonText}>Start Game</Text>
       </Pressable>
-      {/* High Score Button */}
+      {/* go to high scores screen */}
       <Pressable 
         onPress={seeHighScores}
         style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]} 
       >
         <Text style={styles.buttonText}>High Scores</Text>
       </Pressable>
+
+
     </View>
   );
 };
 
 // Styles for a clean, bold start screen
 const styles = StyleSheet.create({
+  icon: {
+    fontSize: 44,
+    marginBottom: 6,
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -44,27 +51,31 @@ const styles = StyleSheet.create({
     padding: 30,
   },
   title: {
-    fontSize: 32,
-    fontWeight: '800',
-    color: '#333333',
+    fontSize: 36,
+    fontWeight: '900',
+    color: '#1a1a1a',
     marginBottom: 10,
+    letterSpacing: 1,
   },
   subtitle: {
-    fontSize: 18,
-    color: '#666666',
-    marginBottom: 40,
+    fontSize: 17,
+    color: '#777777',
+    marginBottom: 55,
+    textAlign: 'center',
+    letterSpacing: 0.6,
   },
   button: {
-    backgroundColor: '#007AFF', // Primary Blue
-    paddingVertical: 15,
+    backgroundColor: '#007AFF', // primary blue
+    paddingVertical: 16,
     paddingHorizontal: 30,
-    borderRadius: 10,
-    minWidth: 200,
+    borderRadius: 12,
+    minWidth: 220,
     alignItems: 'center',
+    marginBottom: 14, // space between buttons
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowOpacity: 0.12,
+    shadowRadius: 5,
     elevation: 3,
   },
   buttonPressed: {
@@ -74,5 +85,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 20,
     fontWeight: '700',
+    letterSpacing: 0.4, // subtle polish
   },
 });
+
