@@ -1,8 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { saveHighScores } from '../lib/storage/highScores';
-import type { Difficulty } from '../lib/game/items';
 
 export default function ScoreScreen(){
     // read round + session scores and difficulty from params -fg
@@ -11,13 +9,6 @@ export default function ScoreScreen(){
     // if there's a score in the round, convert to number, otherwise 0
     const roundScore = params.roundScore ? Number(params.roundScore) : 0; 
     const totalScore = params.totalScore ? Number(params.totalScore) : 0; 
-
-    // Enhanced stats from new scoring system
-    const accuracy = params.accuracy ? Number(params.accuracy) : 0;
-    const maxStreak = params.maxStreak ? Number(params.maxStreak) : 0;
-    const averageReactionTime = params.averageReactionTime ? Number(params.averageReactionTime) : 0;
-    const totalTaps = params.totalTaps ? Number(params.totalTaps) : 0;
-    const correctTaps = params.correctTaps ? Number(params.correctTaps) : 0;
 
     // if there's a difficulty assigned, convert to string, otherwise default to easy
     const difficulty = params.difficulty ? String(params.difficulty) : 'easy'; 
@@ -36,12 +27,6 @@ export default function ScoreScreen(){
     }
     // last round = if the number of rounds is the same or biggger than total rounds -fg
     const isLastRound = gameRound >= gameTotalRounds;
-
-    useEffect(() => {
-      if (isLastRound) {
-        saveHighScores(totalScore, difficulty);
-      }
-    }, [isLastRound, totalScore, difficulty]);
 
     // automatically go to next round if more rounds left -fg
     useEffect(() => {
@@ -111,38 +96,6 @@ export default function ScoreScreen(){
                 {/* <Text style={styles.subtitle}>Score this round:</Text> */}
                 <Text style={styles.difficulty}>Difficulty: {difficulty}</Text>
                 <Text style={styles.score}>{totalScore}</Text>
-                
-                {/* Enhanced Stats Display */}
-                <View style={styles.statsContainer}>
-                  <Text style={styles.statsTitle}>Round Performance</Text>
-                  
-                  <View style={styles.statsRow}>
-                    <View style={styles.statBox}>
-                      <Text style={styles.statValue}>{accuracy}%</Text>
-                      <Text style={styles.statLabel}>Accuracy</Text>
-                    </View>
-                    <View style={styles.statBox}>
-                      <Text style={styles.statValue}>{maxStreak}</Text>
-                      <Text style={styles.statLabel}>Max Streak</Text>
-                    </View>
-                    <View style={styles.statBox}>
-                      <Text style={styles.statValue}>{averageReactionTime}ms</Text>
-                      <Text style={styles.statLabel}>Avg Reaction</Text>
-                    </View>
-                  </View>
-                  
-                  <View style={styles.statsRow}>
-                    <View style={styles.statBox}>
-                      <Text style={styles.statValue}>{correctTaps}/{totalTaps}</Text>
-                      <Text style={styles.statLabel}>Correct Taps</Text>
-                    </View>
-                    <View style={styles.statBox}>
-                      <Text style={styles.statValue}>{roundScore}</Text>
-                      <Text style={styles.statLabel}>Round Score</Text>
-                    </View>
-                  </View>
-                </View>
-                
                 <Text style={styles.roundSummary}>
                   {`Total Score: ${totalScore}`}
                 </Text>
@@ -160,11 +113,6 @@ export default function ScoreScreen(){
             ) : (
               <>
                 <View style={styles.nextRoundSpacing}>
-                  {/* Quick stats for non-final rounds */}
-                  <View style={styles.quickStats}>
-                    <Text style={styles.quickStatText}>Accuracy: {accuracy}% | Streak: {maxStreak} | Score: +{roundScore}</Text>
-                  </View>
-                  
                   <Text style={styles.roundSummary}>
                     {`Total Score: ${totalScore}`}
                   </Text>
@@ -234,59 +182,6 @@ const styles = StyleSheet.create({
     },
     nextRoundSpacing: {
       marginBottom: 30,
-    },
-    // Enhanced Stats Styling
-    statsContainer: {
-      backgroundColor: '#F8F9FA',
-      padding: 20,
-      borderRadius: 15,
-      marginBottom: 25,
-      width: '100%',
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 8,
-      elevation: 3,
-    },
-    statsTitle: {
-      fontSize: 20,
-      fontWeight: '700',
-      color: '#333',
-      textAlign: 'center',
-      marginBottom: 15,
-    },
-    statsRow: {
-      flexDirection: 'row',
-      justifyContent: 'space-around',
-      marginBottom: 15,
-    },
-    statBox: {
-      alignItems: 'center',
-      flex: 1,
-    },
-    statValue: {
-      fontSize: 24,
-      fontWeight: '800',
-      color: '#007AFF',
-      marginBottom: 5,
-    },
-    statLabel: {
-      fontSize: 12,
-      fontWeight: '600',
-      color: '#666',
-      textAlign: 'center',
-    },
-    quickStats: {
-      backgroundColor: '#E8F4FD',
-      padding: 12,
-      borderRadius: 10,
-      marginBottom: 15,
-    },
-    quickStatText: {
-      fontSize: 16,
-      fontWeight: '600',
-      color: '#007AFF',
-      textAlign: 'center',
     },
     // Consistent Button Styling
     button: { 
