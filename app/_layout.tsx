@@ -1,47 +1,44 @@
+import { Colors } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Stack } from 'expo-router';
-import { useColorScheme } from 'react-native';
 
 export default function Layout() {
   const colorScheme = useColorScheme();
-  const headerBackgroundColor = colorScheme === 'dark' ? '#1a1a1a' : '#007AFF';
+  const ActiveTintColor = Colors[colorScheme ?? 'light'].tint;
 
   return (
     <Stack
       screenOptions={{
-        headerStyle: { backgroundColor: headerBackgroundColor },
+        headerStyle: {backgroundColor: ActiveTintColor},
         headerTintColor: '#fff',
-        headerTitleStyle: {
-          fontWeight: 'bold',
-        },
+
       }}>
       <Stack.Screen
         name="index"
         options={{
-          title: 'TSA Security Training',
+          title: 'Start',
         }}
       />
       <Stack.Screen
         name="difficulty"
         options={{
-          title: 'Select Difficulty',
+          title: 'Select Level of Difficulty',
         }}
       />
       <Stack.Screen
         name="playScreen"
         options={{
-          title: 'Security Check',
-          headerShown: false, // Hide header during gameplay for better immersion
+          title: 'Play',
         }}
       />
       <Stack.Screen
         name="scoreScreen"
         options={{
           title: 'Results',
-          headerLeft: () => null, // Prevent going back during score display
         }}
       />
       <Stack.Screen
-        name="highScore"
+        name="highScores"
         options={{
           title: 'High Scores',
         }}
@@ -49,4 +46,3 @@ export default function Layout() {
     </Stack>
   );
 }
-
