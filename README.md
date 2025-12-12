@@ -33,18 +33,18 @@ The game updates score immediately, tracks multiple rounds, and saves high score
 ## Project Structure
 
 app/
-  index.tsx            → Start screen
-  difficulty.tsx       → Difficulty selection
-  playScreen.tsx       → Game logic + grid
-  scoreScreen.tsx      → Results & round transitions
-  highScores.tsx       → Supabase leaderboard
+  index.tsx: Start screen
+  difficulty.tsx: Difficulty selection
+  playScreen.tsx: Game logic + grid
+  scoreScreen.tsx: Results & round transitions
+  highScores.tsx: Supabase leaderboard
 lib/
-  game/items.ts        → Luggage item data
-  game/rules.ts        → Difficulty timing & round rules
-  storage/highscores.ts→ Save/load score logic
-  supabaseClient.ts    → Supabase config
+  game/items.ts: Luggage item data
+  game/rules.ts: Difficulty timing & round rules
+  storage/highscores.ts: save/load score logic
+  supabaseClient.ts: Supabase config
 assets/
-  images/              → Luggage item images
+  images/:Luggage item images
   icon.png
   splash.png
 
