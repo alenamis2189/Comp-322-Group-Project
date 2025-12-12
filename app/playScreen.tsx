@@ -40,8 +40,6 @@ type TappedItem = {
   overlayOpacity: Animated.Value;
 };
 
-const INITIAL_TIME = 60;
-
 export default function PlayScreen() {
   const params = useLocalSearchParams();
 
@@ -73,7 +71,7 @@ export default function PlayScreen() {
   const [score, setScore] = useState<number>(0);
   const [gameItems, setGameItems] = useState<TappedItem[]>([]);
   const [gameEnded, setGameEnded] = useState<boolean>(false);
-  const [timeRemaining, setTimeRemaining] = useState<number>(INITIAL_TIME);
+  const [timeRemaining, setTimeRemaining] = useState<number>(timerSeconds);
   const [roundCount, setRoundCount] = useState<number>(0); // increments when a prohibited item is found
 
   // Animated progress bar value
@@ -82,7 +80,7 @@ export default function PlayScreen() {
   // Grid tile sizing
   const screenWidth = Dimensions.get('window').width;
   const gridPadding = 10 * 2; // container padding left+right
-  const gridGap = 10; // gap between tiles
+  const gridGap = 2; // gap between tiles
   const tileSize = Math.floor((screenWidth - gridPadding - gridGap * 2) / 3);
 
   // Choose composition based on difficulty param
@@ -408,9 +406,10 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     alignContent: 'flex-start',
-    gap: 10,
-    marginBottom: 12,
-    alignSelf: 'center',
+    rowGap: 2, // -fg
+    columnGap: 2, //-fg
+    marginBottom: 5,
+    alignSelf: 'stretch',
   },
   gridItem: {
     borderRadius: 12,
@@ -423,7 +422,6 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
     position: 'relative',
-    marginBottom: 10,
   },
   pressableInner: { width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' },
   gridItemPressed: { opacity: 0.85, transform: [{ scale: 0.98 }] },
@@ -445,7 +443,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   instructionsTitle: {
-    fontSize: 16,
+    fontSize: 26,
     fontWeight: '700',
     textAlign: 'center',
     marginBottom: 8,
@@ -461,7 +459,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   instructionText: {
-    fontSize: 14,
+    fontSize: 20,
     flexShrink: 1,
   },
 });
