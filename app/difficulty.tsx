@@ -1,4 +1,4 @@
-import { router } from 'expo-router';
+import { router } from 'expo-router'; // -fg added useLocalSearchParams
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 export default function DifficultyScreen() {
@@ -11,7 +11,7 @@ export default function DifficultyScreen() {
     let time = 0;
     let rounds = 0;
 
-    // set time and number of rounds depending on difficulty
+    // set time and number of rounds depending on difficulty 
     if (level === 'easy') {
       time = 15;
       rounds = 3;
@@ -31,15 +31,15 @@ export default function DifficultyScreen() {
       params: {
         difficulty: level,
         startingTime: String(time),
-        totalRounds: String(rounds), // depending on mode
+        totalRounds: String(rounds), 
         currentRound: "1",
         scoreSoFar: "0",
 
         // multi-round game logic -fg
-        gameRound: '1',                    // start on round 1 
-        gameTotalRounds: String(rounds),   //  3, 5 or 10 
-        totalScore: '0',                   // total of all rounds starts at 0
-
+        gameRound: '1',
+        gameTotalRounds: String(rounds),
+        totalScore: '0',
+ 
       }
     });
   }
@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#f7f7f7' // soft background so buttons pop a bit
+    backgroundColor: '#f7f7f7'
   },
   title: {
     fontSize: 30,
@@ -84,11 +84,11 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: '#007AFF',
-    width: 240,                // same width for all buttons
+    width: 240,
     paddingVertical: 18,
     borderRadius: 12,
     marginBottom: 18,
-    alignItems: 'center',      // center text horizontally
+    alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.12,
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
   },
   backButton: {
     marginTop: 28,
-    width: 240,               // same width as difficulty buttons -fg
+    width: 240,
     paddingVertical: 16,
     borderRadius: 12,
     backgroundColor: '#555',
