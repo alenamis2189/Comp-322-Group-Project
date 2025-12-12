@@ -1,28 +1,31 @@
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import { fetchTopHighScores, HighScoreRow } from '../lib/game/highscores'; // -fg
 
-// simple high scores screen with mock data for now
+// simple high scores screen
 export default function HighScoresScreen() {
-  const [scores, setScores] = useState<{ score: number; difficulty: string }[]>([]);
+  const [scores, setScores] = useState<HighScoreRow[]>([]); // -fg
+  const [loading, setLoading] = useState(true); // -fg
 
   useEffect(() => {
-    // mock data for presentation only
-    const mockScores = [
-      { score: 50, difficulty: 'hard' },
-      { score: 48, difficulty: 'hard' },
-      { score: 45, difficulty: 'hard' },
-      { score: 41, difficulty: 'hard' },
-      { score: 38, difficulty: 'hard' },
-      { score: 15, difficulty: 'medium' },
-      { score: 14, difficulty: 'medium' },
-      { score: 12, difficulty: 'medium' },
-      { score: 6, difficulty: 'easy' },
-      { score: 5, difficulty: 'easy' },
-    ];
+    async function loadScores() { // -fg
+      setLoading(true); // -fg
+      const data = await fetchTopHighScores(10); // -fg
+      console.log('loaded highscores from supabase:', data); // -fg
+      setScores(data); // -fg
+      setLoading(false); // -fg
+    } // -fg
 
-    setScores(mockScores);
-  }, []);
+    loadScores(); // -fg
+  }, []); // -fg
 
   // go back to start screen
   function goBack() {
@@ -34,33 +37,34 @@ export default function HighScoresScreen() {
     setScores([]);
   }
 
-  // pick a small color accent per difficulty
-  function getDifficultyStyle(diff: string) {
-    if (diff === 'hard') return styles.hard;
-    if (diff === 'medium') return styles.medium;
-    return styles.easy;
-  }
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>High Scores</Text>
 
-      {scores.length === 0 ? (
+      {loading ? (
+        <ActivityIndicator size="large" color="#007AFF" style={{ marginVertical: 20 }} />
+      ) : scores.length === 0 ? (
         <Text style={styles.emptyText}>No Scores Yet!</Text>
       ) : (
-        <View style={styles.card}>
-          <ScrollView>
-            {scores.map((s, i) => (
-              <View key={i} style={styles.row}>
-                <Text style={styles.rank}>{i + 1}.</Text>
-                <Text style={styles.score}>{s.score} pts</Text>
-                <Text style={[styles.difficulty, getDifficultyStyle(s.difficulty)]}>
-                  {s.difficulty.toUpperCase()}
-                </Text>
+        <ScrollView
+          style={styles.list} // scrollable area -fg
+          contentContainerStyle={styles.listContent} // -fg
+          showsVerticalScrollIndicator={false}
+        >
+          {scores.map((row, index) => {
+            return (
+              <View key={row.id} style={styles.card}>
+                <View style={styles.rankBadge}>
+                  <Text style={styles.rankText}>#{index + 1}</Text>
+                </View>
+                <View style={styles.cardContent}>
+                  <Text style={styles.difficultyPill}>{row.difficulty.toUpperCase()}</Text>
+                  <Text style={styles.scoreLabel}>{row.score} pts</Text>
+                </View>
               </View>
-            ))}
-          </ScrollView>
-        </View>
+            );
+          })}
+        </ScrollView>
       )}
 
       <View style={styles.buttonRow}>
@@ -94,88 +98,107 @@ const styles = StyleSheet.create({
   // main screen layout
   container: {
     flex: 1,
-    backgroundColor: '#f7f7f7',
-    justifyContent: 'center',
+    backgroundColor: '#F2F4F8',
+    paddingHorizontal: 24,
+    paddingTop: 32,
+    paddingBottom: 20,
+  },
+
+  // scroll area
+  list: {
+    flex: 1,
+    marginBottom: 20,
+  },
+
+  listContent: {
     alignItems: 'center',
-    padding: 24,
+    paddingBottom: 16,
   },
 
   // screen title
   title: {
-    fontSize: 30,
+    fontSize: 28,
     fontWeight: '800',
-    color: '#222',
-    letterSpacing: 0.8,
+    color: '#1A1A1A',
+    letterSpacing: 0.6,
     marginBottom: 18,
+    textAlign: 'center',
   },
 
   emptyText: {
     fontSize: 16,
     color: '#666',
     marginTop: 10,
-    marginBottom: 40, // some more space before the buttons
+    marginBottom: 40,
+    textAlign: 'center',
   },
 
-  // white card where scores live
   card: {
-    width: 300,
-    maxHeight: 320,
-    backgroundColor: '#fff',
-    borderRadius: 14,
+    width: '100%',
+    maxWidth: 360,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
     paddingVertical: 10,
     paddingHorizontal: 14,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 3,
-    marginBottom: 24,
+    shadowOpacity: 0.06,
+    shadowRadius: 5,
+    elevation: 2,
+    marginBottom: 12,
   },
 
-  // each row in the list
-  row: {
+  rankBadge: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#E0ECFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 14,
+  },
+
+  rankText: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#1C6FEA',
+  },
+
+  cardContent: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 6,
-    borderBottomWidth: 0.5,
-    borderBottomColor: '#eee',
+    justifyContent: 'space-between',
   },
 
-  rank: {
-    width: 30,
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#555',
+  difficultyPill: {
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    borderRadius: 999,
+    backgroundColor: '#F0F1F5',
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#444',
   },
 
-  score: {
-    flex: 1,
+  scoreLabel: {
     fontSize: 18,
-    fontWeight: '700',
-    color: '#222',
-  },
-
-  difficulty: {
-    fontSize: 14,
-    fontWeight: '700',
-  },
-
-  // small color accents per difficulty
-  hard: {
-    color: '#d9534f', // red-ish
-  },
-  medium: {
-    color: '#f0ad4e', // orange-ish
-  },
-  easy: {
-    color: '#5cb85c', // green-ish
+    fontWeight: '800',
+    color: '#111111',
   },
 
   // bottom buttons row
   buttonRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: 300,
+    alignItems: 'center',
+    maxWidth: 340,
+    alignSelf: 'center',
+    marginTop: 32,
+    marginBottom: 32,
+    columnGap: 20,
   },
 
   button: {
