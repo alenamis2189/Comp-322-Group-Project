@@ -2,6 +2,7 @@ import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Stack } from 'expo-router';
 
+// Setting up navitation as stack -fg
 export default function Layout() {
   const colorScheme = useColorScheme();
   const ActiveTintColor = Colors[colorScheme ?? 'light'].tint;
