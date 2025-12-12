@@ -4,7 +4,7 @@ TSA Luggage Check
 
 ## YouTube Overview
 
-[![Tsa_Bag_Ready_Demo](http://img.youtube.com/vi/wJu0AM3-YLw/0.jpg)]
+[![TSA Luggage Check Demo](https://img.youtube.com/vi/wJu0AM3-YLw/0.jpg)](https://www.youtube.com/shorts/wJu0AM3-YLw "TSA Luggage Check Demo")
 
 https://youtube.com/shorts/wJu0AM3-YLw?feature=share
 ## Overview
